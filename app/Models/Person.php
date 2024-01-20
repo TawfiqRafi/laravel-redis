@@ -11,6 +11,10 @@ class Person extends Model
 
     protected $fillable = ['email', 'name', 'birthday', 'phone', 'ip', 'country'];
 
+    protected $casts = [
+        'birthday' => 'date:Y-m-d',
+    ];
+
     // Additional attributes for easy querying
     protected $appends = ['birth_year', 'birth_month'];
 

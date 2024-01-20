@@ -11,31 +11,49 @@ class PersonController extends Controller
     public function filter(Request $request)
     {
         $startTime = microtime(true);
-        $cacheKey = 'persons:' . md5(serialize($request->all()));
-        
-        $perPage = 20;
-        $result = Cache::get($cacheKey);
 
-        if (!$result) {
-            info('nocache');
-            $query = Person::query();
-            
-            if ($request->has('birth_year')) {
-                $query->where('birth_year', $request->input('birth_year'));
-            }
+        $page = $request->input('page', 1);
 
-            if ($request->has('birth_month')) {
-                $query->where('birth_month', $request->input('birth_month'));
-            }
+        $cacheKey = 'filtered_people:' . serialize($request->only(['birth_year', 'birth_month'])) . ':page_' . $page;
 
-            $result = $query->paginate($perPage);
-            Cache::put($cacheKey, $result, 60);
-        }else{
-            info('cache');
+        $people = Cache::remember($cacheKey, 60, function () use ($request) {
+            return Person::when($request->filled('birth_year'), function ($query) use ($request) {
+                $query->whereYear('birthday', $request->input('birth_year'));
+            })
+            ->when($request->filled('birth_month'), function ($query) use ($request) {
+                $query->whereMonth('birthday', $request->input('birth_month'));
+            })
+            ->when($request->filled('birth_year') && $request->filled('birth_month'), function ($query) use ($request) {
+                $query->whereRaw("DATE_FORMAT(birthday, '%Y') = ?", [$request->input('birth_year')])
+                    ->whereRaw("DATE_FORMAT(birthday, '%m') = ?", [$request->input('birth_month')]);
+            })
+            ->paginate(20);
+        });
+
+        if (!Cache::has($cacheKey)) {
+            $people = Person::when($request->filled('birth_year'), function ($query) use ($request) {
+                $query->whereYear('birthday', $request->input('birth_year'));
+            })
+            ->when($request->filled('birth_month'), function ($query) use ($request) {
+                $query->whereMonth('birthday', $request->input('birth_month'));
+            })
+            ->when($request->filled('birth_year') && $request->filled('birth_month'), function ($query) use ($request) {
+                $query->whereRaw("DATE_FORMAT(birthday, '%Y') = ?", [$request->input('birth_year')])
+                    ->whereRaw("DATE_FORMAT(birthday, '%m') = ?", [$request->input('birth_month')]);
+            })
+            ->paginate(20);
+
+            Cache::put($cacheKey, $people, 60);
         }
 
         $endTime = microtime(true);
         $executionTime = $endTime - $startTime;
-        return response()->json(['cache-key' => $cacheKey,'execution_time' => $executionTime]);
+
+
+        return view('persons', [
+            'people' => $people,
+            'executionTime' => $executionTime,
+            'cacheKey' => $cacheKey,
+        ]);
     }
 }

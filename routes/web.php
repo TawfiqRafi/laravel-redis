@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\PersonController;
 
-Route::get('/persons/filter', [PersonController::class, 'filter'])->name('persons.filter');
+Route::get('/', [PersonController::class, 'filter'])->name('persons.filter');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () {
+//    return view('welcome');
+//});
