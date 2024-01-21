@@ -1,10 +1,10 @@
 <p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
 <p align="center">
-    <a href="https://github.com/laravel-redis/laravel-redis/actions"><img src="https://github.com/laravel-redis/laravel-redis/workflows/tests/badge.svg" alt="Build Status"></a>
-    <a href="https://packagist.org/packages/laravel-redis/laravel-redis"><img src="https://img.shields.io/packagist/dt/laravel-redis/laravel-redis" alt="Total Downloads"></a>
-    <a href="https://packagist.org/packages/laravel-redis/laravel-redis"><img src="https://img.shields.io/packagist/v/laravel-redis/laravel-redis" alt="Latest Stable Version"></a>
-    <a href="https://packagist.org/packages/laravel-redis/laravel-redis"><img src="https://img.shields.io/packagist/l/laravel-redis/laravel-redis" alt="License"></a>
+    <a href="https://github.com/TawfiqRafi/laravel-redis/actions"><img src="https://github.com/TawfiqRafi/laravel-redis/workflows/tests/badge.svg" alt="Build Status"></a>
+    <a href="https://packagist.org/packages/tawfiqrafi/laravel-redis"><img src="https://img.shields.io/packagist/dt/tawfiqrafi/laravel-redis" alt="Total Downloads"></a>
+    <a href="https://packagist.org/packages/tawfiqrafi/laravel-redis"><img src="https://img.shields.io/packagist/v/tawfiqrafi/laravel-redis" alt="Latest Stable Version"></a>
+    <a href="https://packagist.org/packages/tawfiqrafi/laravel-redis"><img src="https://img.shields.io/packagist/l/tawfiqrafi/laravel-redis" alt="License"></a>
 </p>
 
 # Laravel Redis Project
@@ -20,10 +20,10 @@ This Laravel project integrates Predis for Redis functionality. Follow the steps
     cd laravel-redis
     ```
 
-2. **Install Dependencies**
+2. **Install Dependencies and Predis**
 
     ```bash
-    composer install
+    composer require predis/predis
     ```
 
 3. **Set up Environment Variables**
@@ -37,12 +37,18 @@ This Laravel project integrates Predis for Redis functionality. Follow the steps
     php artisan migrate
     ```
 
-5. **Import Database**
+5. **Import Database from `test_data.sql`**
 
     Ensure you have a database created and configured in your `.env` file. Then import the database using:
 
     ```bash
     php artisan db:seed --class=TestDataSeeder
+    ```
+
+    Alternatively, if you have a `test_data.sql` file, you can directly import it:
+
+    ```bash
+    mysql -u your-database-username -p your-database-name < test_data.sql
     ```
 
 6. **Run the Project**
